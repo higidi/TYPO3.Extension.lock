@@ -1,0 +1,28 @@
+cache:
+  paths:
+  - .composer/
+
+stages:
+  - lint
+  - test
+
+variables:
+  COMPOSER_CACHE_DIR: ".composer"
+  COMPOSER_PROCESS_TIMEOUT: "1800"
+  COMPOSER_ALLOW_SUPERUSER: "1"
+  TYPO3_VERSION: ^8.7
+
+.lint: &lint
+  image: composer
+  stage: test
+  before_script:
+    - apk --no-cache add parallel
+    - composer --no-ansi self-update
+    - composer --no-ansi --version
+    - composer require --no-interaction --no-ansi typo3/cms="${TYPO3_VERSION}"
+    - composer install --no-interaction --no-ansi
+
+lint:
+  <<: *lint
+  script:
+    - find . -name \*.php ! -path "./.Build/*" | parallel --gnu php -d display_errors=stderr -l {} > /dev/null \;
