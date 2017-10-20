@@ -14,7 +14,7 @@ variables:
 
 .lint: &lint
   image: composer
-  stage: test
+  stage: lint
   before_script:
     - apk --no-cache add parallel
     - composer --no-ansi self-update
