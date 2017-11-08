@@ -1,6 +1,6 @@
 <?php
 
-namespace Higidi\Lock\Locking\Strategy;
+namespace Higidi\Lock\Strategy;
 
 use Higidi\Lock\Exception\InvalidArgumentException;
 use NinjaMutex\Mutex;

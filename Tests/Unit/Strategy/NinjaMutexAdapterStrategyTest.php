@@ -1,16 +1,16 @@
 <?php
 
-namespace Higidi\Lock\Tests\Unit\Locking\Strategy;
+namespace Higidi\Lock\Tests\Unit\Strategy;
 
-use Higidi\Lock\Locking\Strategy\NinjaMutexAdapterStrategy;
+use Higidi\Lock\Strategy\NinjaMutexAdapterStrategy;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use NinjaMutex\Mutex;
 use TYPO3\CMS\Core\Locking\LockingStrategyInterface;
 
 /**
- * Test case for "\Higidi\Lock\Locking\Strategy\NinjaMutexAdapterStrategy".
+ * Test case for "\Higidi\Lock\Strategy\NinjaMutexAdapterStrategy".
  *
- * @covers \Higidi\Lock\Locking\Strategy\NinjaMutexAdapterStrategy
+ * @covers \Higidi\Lock\Strategy\NinjaMutexAdapterStrategy
  */
 class NinjaMutexAdapterStrategyTest extends UnitTestCase
 {
