@@ -38,6 +38,12 @@
 		"bin-dir": ".Build/bin",
 		"vendor-dir": ".Build/vendor"
 	},
+	"scripts": {
+		"post-autoload-dump": [
+			"mkdir -p .Build/Web/typo3conf/ext/",
+			"[ -L .Build/Web/typo3conf/ext/lock ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/lock"
+		]
+	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "1.x-dev"
