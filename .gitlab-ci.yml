@@ -43,7 +43,10 @@ lint:cgl:
     - composer require --no-interaction --no-ansi typo3/cms="${TYPO3_VERSION}"
     - composer install --no-interaction --no-ansi
   script:
-    - echo "MISSING"
+    - >
+      echo;
+      echo "Running unit tests";
+      .Build/bin/phpunit --colors -c .Build/vendor/nimut/testing-framework/res/Configuration/UnitTests.xml .Build/Web/typo3conf/ext/lock/Tests/Unit
 
 php56:t3_7:
   <<: *test
