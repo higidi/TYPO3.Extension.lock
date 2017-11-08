@@ -11,6 +11,7 @@ variables:
   COMPOSER_PROCESS_TIMEOUT: "1800"
   COMPOSER_ALLOW_SUPERUSER: "1"
   TYPO3_VERSION: ^8.7
+  TYPO3_PATH_WEB: "$CI_PROJECT_DIR/.Build/Web"
 
 .lint: &lint
   image: composer
