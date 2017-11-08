@@ -30,7 +30,7 @@ lint:
 lint:cgl:
   <<: *lint
   script:
-    - .Build/bin/php-cs-fixer fix --config=Build/.php_cs -v --dry-run --using-cache=no --path-mode=intersection `git diff --name-only --diff-filter=ACMRTUXB $COMMIT_RANGE`
+    - .Build/bin/php-cs-fixer fix --config=.php_cs -v --dry-run --using-cache=no --path-mode=intersection `git diff --name-only --diff-filter=ACMRTUXB $COMMIT_RANGE`
 
 .test: &test
   stage: test
