@@ -1,7 +1,7 @@
 {
 	"name": "higidi/typo3-lock",
 	"type": "typo3-cms-extension",
-	"description": "Extension providing advanced TYPO3 locking",
+	"description": "Features TYPO3 with an advanced locking.",
 	"homepage": "http://www.higidi.de",
 	"keywords": [
 		"TYPO3",
