@@ -3,6 +3,7 @@
 namespace Higidi\Lock\Tests\Unit;
 
 use Higidi\Lock\Configuration\Configuration;
+use Higidi\Lock\LockBuilder;
 use Higidi\Lock\LockFactory;
 use Higidi\Lock\Strategy\MutexAdapterStrategy;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
@@ -58,6 +59,28 @@ class LockFactoryTest extends UnitTestCase
         $sut = new LockFactory($configuration->reveal());
 
         $this->assertSame($configuration->reveal(), $sut->getConfiguration());
+    }
+
+    /**
+     * @test
+     */
+    public function itCreatesADefaultLockBuilderIfNotPassed()
+    {
+        $sut = new LockFactory();
+
+        $this->assertInstanceOf(LockBuilder::class, $sut->getLockBuilder());
+    }
+
+    /**
+     * @test
+     */
+    public function itHoldsALockBuilder()
+    {
+        $lockBuilder = $this->prophesize(LockBuilder::class);
+
+        $sut = new LockFactory(null, $lockBuilder->reveal());
+
+        $this->assertSame($lockBuilder->reveal(), $sut->getLockBuilder());
     }
 
     /**
