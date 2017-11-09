@@ -27,11 +27,7 @@
 	},
 	"require-dev": {
 		"friendsofphp/php-cs-fixer": "^2.0",
-		"nimut/testing-framework": "^2.0",
-		"predis/predis": "1.0.*",
-		"ext-memcached": "*",
-		"ext-pdo_mysql": "*",
-		"ext-redis": "*"
+		"nimut/testing-framework": "^2.0"
 	},
 	"license": "GPL-2.0+",
 	"authors": [
