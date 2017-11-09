@@ -195,27 +195,16 @@ class ConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     */
-    public function itHoldsAStrategy()
-    {
-        $strategy = $this->prophesize(LockingStrategyInterface::class)->reveal();
-        $className = get_class($strategy);
-
-        $sut = new Configuration();
-        $sut->setStrategy($className);
-
-        $this->assertSame($className, $sut->getStrategy());
-    }
-
-    /**
-     * @test
      * @expectedException \Higidi\Lock\Configuration\Exception\InvalidStrategyException
      * @expectedExceptionCode 1510177679
      */
     public function itThrowsAnInvalidStrategyExceptionIfStrategyDoNotImplementTheLockingStrategyInterface()
     {
-        $sut = new Configuration();
-        $sut->setStrategy(\stdClass::class);
+        $configuration = [
+            'strategy' => \stdClass::class,
+        ];
+
+        new Configuration($configuration);
     }
 
     /**
@@ -225,11 +214,12 @@ class ConfigurationTest extends UnitTestCase
     {
         $strategy = $this->prophesize(MutexAdapterStrategy::class)->reveal();
         $className = get_class($strategy);
+        $configuration = [
+            'active' => true,
+            'strategy' => $className,
+        ];
 
-        $sut = new Configuration();
-        $sut->setActive(true);
-        $this->assertFalse($sut->isMutexStrategy());
-        $sut->setStrategy($className);
+        $sut = new Configuration($configuration);
 
         $this->assertTrue($sut->isMutexStrategy());
     }
@@ -247,26 +237,15 @@ class ConfigurationTest extends UnitTestCase
 
     /**
      * @test
-     */
-    public function itHoldsAMutex()
-    {
-        $mutex = $this->prophesize(Mutex::class)->reveal();
-        $className = get_class($mutex);
-
-        $sut = new Configuration();
-        $sut->setMutex($className);
-
-        $this->assertSame($className, $sut->getMutex());
-    }
-
-    /**
-     * @test
      * @expectedException \Higidi\Lock\Configuration\Exception\InvalidMutexException
      * @expectedExceptionCode 1510177680
      */
     public function itThrowsAnInvalidMutexExceptionIfMutexDoNotExtendTheBaseMutex()
     {
-        $sut = new Configuration();
-        $sut->setMutex(\stdClass::class);
+        $configuration = [
+            'mutex' => \stdClass::class,
+        ];
+
+        new Configuration($configuration);
     }
 }

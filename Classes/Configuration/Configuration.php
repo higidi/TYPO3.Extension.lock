@@ -91,7 +91,7 @@ class Configuration implements SingletonInterface
      * @return $this
      * @throws InvalidStrategyException
      */
-    public function setStrategy($strategy = null)
+    protected function setStrategy($strategy = null)
     {
         if (! is_a($strategy, LockingStrategyInterface::class, true)) {
             throw new InvalidStrategyException(
@@ -130,7 +130,7 @@ class Configuration implements SingletonInterface
      * @return $this
      * @throws InvalidMutexException
      */
-    public function setMutex($mutex)
+    protected function setMutex($mutex)
     {
         if (! is_a($mutex, Mutex::class, true)) {
             throw new InvalidMutexException(
