@@ -169,7 +169,7 @@ class Configuration implements SingletonInterface
         if (! is_a($lockImplementation, LockInterface::class, true)) {
             throw new InvalidLockImplementationException(
                 sprintf('%s only accepts classes extending the %s class', __METHOD__, LockInterface::class),
-                1510177680
+                1510268834
             );
         }
         $this->lockImplementation = $lockImplementation;

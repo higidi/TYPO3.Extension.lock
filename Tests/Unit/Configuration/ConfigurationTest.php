@@ -294,4 +294,18 @@ class ConfigurationTest extends UnitTestCase
 
         $this->assertNull($sut->getLockImplementation());
     }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Configuration\Exception\InvalidLockImplementationException
+     * @expectedExceptionCode 1510268834
+     */
+    public function itThrowsAnInvalidLockImplementationExceptionIfLockImplementionDoNotImplementTheLockingInterface()
+    {
+        $configuration = [
+            'lockImplementation' => \stdClass::class,
+        ];
+
+        new Configuration($configuration);
+    }
 }
