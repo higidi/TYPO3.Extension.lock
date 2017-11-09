@@ -5,6 +5,7 @@ namespace Higidi\Lock\Tests\Unit\Configuration;
 use Higidi\Lock\Configuration\Configuration;
 use Higidi\Lock\Strategy\MutexAdapterStrategy;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
+use NinjaMutex\Lock\LockInterface;
 use NinjaMutex\Mutex;
 use TYPO3\CMS\Core\Locking\LockingStrategyInterface;
 use TYPO3\CMS\Core\Locking\SimpleLockStrategy;
@@ -162,6 +163,41 @@ class ConfigurationTest extends UnitTestCase
     /**
      * @test
      */
+    public function itIsPossibleToSetLockImplementationViaGlobalsConfigurationArray()
+    {
+        $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
+        $className = get_class($lockImplementation);
+
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['locking'] = [
+            'lockImplementation' => $className,
+        ];
+
+        $sut = new Configuration();
+
+        $this->assertSame($className, $sut->getLockImplementation());
+    }
+
+    /**
+     * @test
+     */
+    public function itIsPossibleToSetLockImplementationViaConfigurationArray()
+    {
+        $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
+        $className = get_class($lockImplementation);
+
+        $configuration = [
+            'active' => true,
+            'lockImplementation' => $className,
+        ];
+
+        $sut = new Configuration($configuration);
+
+        $this->assertSame($className, $sut->getLockImplementation());
+    }
+
+    /**
+     * @test
+     */
     public function itIsDisabledByDefault()
     {
         $sut = new Configuration();
@@ -247,5 +283,15 @@ class ConfigurationTest extends UnitTestCase
         ];
 
         new Configuration($configuration);
+    }
+
+    /**
+     * @test
+     */
+    public function itHasNullAsDefaultLockImplementation()
+    {
+        $sut = new Configuration();
+
+        $this->assertNull($sut->getLockImplementation());
     }
 }

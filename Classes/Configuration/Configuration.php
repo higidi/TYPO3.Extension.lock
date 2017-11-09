@@ -2,9 +2,11 @@
 
 namespace Higidi\Lock\Configuration;
 
+use Higidi\Lock\Configuration\Exception\InvalidLockImplementationException;
 use Higidi\Lock\Configuration\Exception\InvalidMutexException;
 use Higidi\Lock\Configuration\Exception\InvalidStrategyException;
 use Higidi\Lock\Strategy\MutexAdapterStrategy;
+use NinjaMutex\Lock\LockInterface;
 use NinjaMutex\Mutex;
 use TYPO3\CMS\Core\Locking\LockingStrategyInterface;
 use TYPO3\CMS\Core\Locking\SimpleLockStrategy;
@@ -29,6 +31,11 @@ class Configuration implements SingletonInterface
      * @var string
      */
     protected $mutex = Mutex::class;
+
+    /**
+     * @var null|string
+     */
+    protected $lockImplementation;
 
     /**
      * @param array|null $configuration
@@ -139,6 +146,33 @@ class Configuration implements SingletonInterface
             );
         }
         $this->mutex = $mutex;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLockImplementation()
+    {
+        return $this->lockImplementation;
+    }
+
+    /**
+     * @param string $lockImplementation
+     *
+     * @return $this
+     * @throws InvalidLockImplementationException
+     */
+    protected function setLockImplementation($lockImplementation)
+    {
+        if (! is_a($lockImplementation, LockInterface::class, true)) {
+            throw new InvalidLockImplementationException(
+                sprintf('%s only accepts classes extending the %s class', __METHOD__, LockInterface::class),
+                1510177680
+            );
+        }
+        $this->lockImplementation = $lockImplementation;
 
         return $this;
     }
