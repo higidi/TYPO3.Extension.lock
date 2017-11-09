@@ -12,7 +12,7 @@ use TYPO3\CMS\Core\Locking\LockingStrategyInterface;
 /**
  * TYPO3 lock strategy adapter for the arvenil/ninja-mutex library.
  */
-class NinjaMutexAdapterStrategy implements LockingStrategyInterface
+class MutexAdapterStrategy implements LockingStrategyInterface
 {
     /**
      * @var Mutex

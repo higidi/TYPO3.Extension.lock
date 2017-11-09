@@ -4,7 +4,7 @@ namespace Higidi\Lock\Configuration;
 
 use Higidi\Lock\Configuration\Exception\InvalidMutexException;
 use Higidi\Lock\Configuration\Exception\InvalidStrategyException;
-use Higidi\Lock\Strategy\NinjaMutexAdapterStrategy;
+use Higidi\Lock\Strategy\MutexAdapterStrategy;
 use NinjaMutex\Mutex;
 use TYPO3\CMS\Core\Locking\LockingStrategyInterface;
 use TYPO3\CMS\Core\Locking\SimpleLockStrategy;
@@ -113,7 +113,7 @@ class Configuration implements SingletonInterface
      */
     public function isMutexStrategy()
     {
-        return $this->isActive() && is_a($this->getStrategy(), NinjaMutexAdapterStrategy::class, true);
+        return $this->isActive() && is_a($this->getStrategy(), MutexAdapterStrategy::class, true);
     }
 
     /**

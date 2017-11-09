@@ -2,17 +2,17 @@
 
 namespace Higidi\Lock\Tests\Unit\Strategy;
 
-use Higidi\Lock\Strategy\NinjaMutexAdapterStrategy;
+use Higidi\Lock\Strategy\MutexAdapterStrategy;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use NinjaMutex\Mutex;
 use TYPO3\CMS\Core\Locking\LockingStrategyInterface;
 
 /**
- * Test case for "\Higidi\Lock\Strategy\NinjaMutexAdapterStrategy".
+ * Test case for "\Higidi\Lock\Strategy\MutexAdapterStrategy".
  *
- * @covers \Higidi\Lock\Strategy\NinjaMutexAdapterStrategy
+ * @covers \Higidi\Lock\Strategy\MutexAdapterStrategy
  */
-class NinjaMutexAdapterStrategyTest extends UnitTestCase
+class MutexAdapterStrategyTest extends UnitTestCase
 {
     /**
      * @test
@@ -20,7 +20,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
     public function itImplementsTheLockStrategyInterface()
     {
         $mutex = $this->prophesize(Mutex::class);
-        $sut = new NinjaMutexAdapterStrategy($mutex->reveal());
+        $sut = new MutexAdapterStrategy($mutex->reveal());
 
         $this->assertInstanceOf(LockingStrategyInterface::class, $sut);
     }
@@ -32,7 +32,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
      */
     public function itThrowsAnInvalidArgumentExceptionIfMutexIsNotPassed()
     {
-        new NinjaMutexAdapterStrategy('blafoo');
+        new MutexAdapterStrategy('blafoo');
     }
 
     /**
@@ -40,7 +40,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
      */
     public function itReturnsAnExclusiveCapability()
     {
-        $capabilities = NinjaMutexAdapterStrategy::getCapabilities();
+        $capabilities = MutexAdapterStrategy::getCapabilities();
 
         $capability = LockingStrategyInterface::LOCK_CAPABILITY_EXCLUSIVE;
         $this->assertSame($capability, $capabilities & $capability);
@@ -51,7 +51,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
      */
     public function itReturnsANoBlockCapability()
     {
-        $capabilities = NinjaMutexAdapterStrategy::getCapabilities();
+        $capabilities = MutexAdapterStrategy::getCapabilities();
 
         $capability = LockingStrategyInterface::LOCK_CAPABILITY_NOBLOCK;
         $this->assertSame($capability, $capabilities & $capability);
@@ -62,7 +62,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
      */
     public function itReturnsAPriority()
     {
-        $priority = NinjaMutexAdapterStrategy::getPriority();
+        $priority = MutexAdapterStrategy::getPriority();
 
         $this->assertSame(0, $priority);
     }
@@ -77,7 +77,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
             ->acquireLock(null)
             ->shouldBeCalled()
             ->willReturn(true);
-        $sut = new NinjaMutexAdapterStrategy($mutex->reveal());
+        $sut = new MutexAdapterStrategy($mutex->reveal());
 
         $this->assertTrue($sut->acquire());
     }
@@ -93,7 +93,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
             ->acquireLock(0)
             ->shouldBeCalled()
             ->willReturn(true);
-        $sut = new NinjaMutexAdapterStrategy($mutex->reveal());
+        $sut = new MutexAdapterStrategy($mutex->reveal());
 
         $this->assertTrue($sut->acquire($mode));
     }
@@ -108,7 +108,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
             ->releaseLock()
             ->shouldBeCalled()
             ->willReturn(true);
-        $sut = new NinjaMutexAdapterStrategy($mutex->reveal());
+        $sut = new MutexAdapterStrategy($mutex->reveal());
 
         $this->assertTrue($sut->release());
     }
@@ -123,7 +123,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
             ->releaseLock()
             ->shouldBeCalled()
             ->willReturn(true);
-        $sut = new NinjaMutexAdapterStrategy($mutex->reveal());
+        $sut = new MutexAdapterStrategy($mutex->reveal());
 
         $sut->destroy();
     }
@@ -138,7 +138,7 @@ class NinjaMutexAdapterStrategyTest extends UnitTestCase
             ->isAcquired()
             ->shouldBeCalled()
             ->willReturn(true);
-        $sut = new NinjaMutexAdapterStrategy($mutex->reveal());
+        $sut = new MutexAdapterStrategy($mutex->reveal());
 
         $this->assertTrue($sut->isAcquired());
     }

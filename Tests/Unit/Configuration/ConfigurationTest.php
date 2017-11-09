@@ -3,7 +3,7 @@
 namespace Higidi\Lock\Tests\Unit\Configuration;
 
 use Higidi\Lock\Configuration\Configuration;
-use Higidi\Lock\Strategy\NinjaMutexAdapterStrategy;
+use Higidi\Lock\Strategy\MutexAdapterStrategy;
 use Nimut\TestingFramework\TestCase\UnitTestCase;
 use NinjaMutex\Mutex;
 use TYPO3\CMS\Core\Locking\LockingStrategyInterface;
@@ -223,7 +223,7 @@ class ConfigurationTest extends UnitTestCase
      */
     public function itDetectsTheMutexAdapterStrategy()
     {
-        $strategy = $this->prophesize(NinjaMutexAdapterStrategy::class)->reveal();
+        $strategy = $this->prophesize(MutexAdapterStrategy::class)->reveal();
         $className = get_class($strategy);
 
         $sut = new Configuration();
