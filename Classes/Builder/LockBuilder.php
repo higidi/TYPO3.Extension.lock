@@ -1,6 +1,6 @@
 <?php
 
-namespace Higidi\Lock;
+namespace Higidi\Lock\Builder;
 
 use TYPO3\CMS\Core\SingletonInterface;
 

@@ -3,7 +3,7 @@
 namespace Higidi\Lock\Tests\Unit;
 
 use Higidi\Lock\Configuration\Configuration;
-use Higidi\Lock\LockBuilder;
+use Higidi\Lock\Builder\LockBuilder;
 use Higidi\Lock\LockFactory;
 use Higidi\Lock\Strategy\MutexAdapterStrategy;
 use Nimut\TestingFramework\TestCase\UnitTestCase;

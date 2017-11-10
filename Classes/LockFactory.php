@@ -2,6 +2,7 @@
 
 namespace Higidi\Lock;
 
+use Higidi\Lock\Builder\LockBuilder;
 use Higidi\Lock\Configuration\Configuration;
 use TYPO3\CMS\Core\Locking\Exception\LockCreateException;
 use TYPO3\CMS\Core\Locking\LockFactory as CoreLockFactory;
