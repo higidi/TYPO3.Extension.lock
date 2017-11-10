@@ -12,6 +12,10 @@ variables:
   COMPOSER_ALLOW_SUPERUSER: "1"
   TYPO3_VERSION: ^8.7
   TYPO3_PATH_WEB: "$CI_PROJECT_DIR/.Build/Web"
+  MYSQL_DATABASE: "typo3"
+  MYSQL_USER: "typo3"
+  MYSQL_PASSWORD: "typo3"
+  MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
 
 .lint: &lint
   image: composer
@@ -38,9 +42,6 @@ lint:cgl:
   services:
     - redis:latest
     - mysql:latest
-  variables:
-    MYSQL_DATABASE: "typo3"
-    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
   before_script:
     - apk add --no-cache --virtual .build-deps autoconf g++ make
     - docker-php-ext-install pdo pdo_mysql
