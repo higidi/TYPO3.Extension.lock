@@ -42,6 +42,52 @@ class LockBuilder implements SingletonInterface
     }
 
     /**
+     * @param array $configuration
+     *
+     * @return Lock\PhpRedisLock
+     * @throws InvalidConfigurationException
+     * @throws LockCreateException
+     */
+    public function buildPhpRedisLock(array $configuration)
+    {
+        if (! extension_loaded('redis')) {
+            throw new LockCreateException('PHP extension "redis" not loaded', 1510321193);
+        }
+        $host = isset($configuration['host']) ? (string)$configuration['host'] : null;
+        if (empty($host)) {
+            throw new InvalidConfigurationException($configuration, 'Missing or empty redis host', 1510321408);
+        }
+        $port = isset($configuration['port']) ? (int)$configuration['port'] : 6379;
+        $timeout = isset($configuration['timeout']) ? (float)$configuration['timeout'] : 0.0;
+        $password = isset($configuration['password']) ? (string)$configuration['password'] : null;
+        $database = isset($configuration['database']) ? (int)$configuration['database'] : 0;
+
+        /** @var \Redis $redis */
+        $errorReporting = error_reporting();
+        error_reporting(0);
+        $redis = GeneralUtility::makeInstance(\Redis::class);
+        if (! $redis->connect($host, $port, $timeout)) {
+            throw new LockCreateException(
+                sprintf('Could not connect to redis host "%s" on port %d', $host, $port),
+                1510321516
+            );
+        };
+        if (! empty($password)) {
+            if (! $redis->auth($password)) {
+                throw new LockCreateException('Authentication with redis host failed', 1510321753);
+            };
+        }
+        if (! $redis->select($database)) {
+            throw new LockCreateException('Switch redis database to %d failed', 1510321791);
+        };
+        error_reporting($errorReporting);
+
+        $lock = GeneralUtility::makeInstance(Lock\PhpRedisLock::class, $redis);
+
+        return $lock;
+    }
+
+    /**
      * @param string $className
      * @param array $configuration
      *

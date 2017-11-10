@@ -127,4 +127,82 @@ class LockBuilderTest extends UnitTestCase
 
         $builder->buildFlockLock([]);
     }
+
+    /**
+     * @test
+     */
+    public function itBuildsAPhpRedisLock()
+    {
+        $configuration = [
+            'host' => 'redis',
+        ];
+
+        $builder = new LockBuilder();
+
+        $lock = $builder->buildPhpRedisLock($configuration);
+
+        $this->assertInstanceOf(Lock\PhpRedisLock::class, $lock);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Builder\Exception\InvalidConfigurationException
+     * @expectedExceptionCode 1510321408
+     */
+    public function itThrowsAInvalidConfigurationExceptionOnBuildAPhpRedisLockWithMissingHostConfiguration()
+    {
+        $builder = new LockBuilder();
+
+        $builder->buildPhpRedisLock([]);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Builder\Exception\LockCreateException
+     * @expectedExceptionCode 1510321516
+     */
+    public function itThrowsALockCreateExceptionOnBuildPhpRedisLockIfCanNotConnectToRedis()
+    {
+        $configuration = [
+            'host' => '1.2.3.4',
+            'port' => 1,
+        ];
+
+        $builder = new LockBuilder();
+
+        $builder->buildPhpRedisLock($configuration);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Builder\Exception\LockCreateException
+     * @expectedExceptionCode 1510321753
+     */
+    public function itThrowsALockCreateExceptionOnBuildPhpRedisLockIfCanNotAuthWithRedis()
+    {
+        $configuration = [
+            'host' => 'redis',
+            'password' => 'invalidPassword',
+        ];
+
+        $builder = new LockBuilder();
+
+        $builder->buildPhpRedisLock($configuration);
+    }
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Builder\Exception\LockCreateException
+     * @expectedExceptionCode 1510321791
+     */
+    public function itThrowsALockCreateExceptionOnBuildPhpRedisLockIfCanNotSelectRedisDatabase()
+    {
+        $configuration = [
+            'host' => 'redis',
+            'database' => -1,
+        ];
+
+        $builder = new LockBuilder();
+
+        $builder->buildPhpRedisLock($configuration);
+    }
 }
