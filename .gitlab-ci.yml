@@ -43,9 +43,9 @@ lint:cgl:
     MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
   before_script:
     - apk add --no-cache --virtual .build-deps autoconf g++ make
-    - pecl install -f redis
     - docker-php-ext-install pdo pdo_mysql
-    - docker-php-ext-enable redis
+    - pecl install -f redis xdebug
+    - docker-php-ext-enable redis xdebug
     - wget https://composer.github.io/installer.sig -O - -q | tr -d '\n' > installer.sig
     - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
     - php -r "if (hash_file('SHA384', 'composer-setup.php') === file_get_contents('installer.sig')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
