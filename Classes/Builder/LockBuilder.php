@@ -22,6 +22,35 @@ class LockBuilder implements SingletonInterface
      */
     public function buildDirectoryLock(array $configuration)
     {
+        $lock = $this->buildPathLock(Lock\DirectoryLock::class, $configuration);
+
+        return $lock;
+    }
+
+    /**
+     * @param array $configuration
+     *
+     * @return Lock\FlockLock
+     * @throws InvalidConfigurationException
+     * @throws LockCreateException
+     */
+    public function buildFlockLock(array $configuration)
+    {
+        $lock = $this->buildPathLock(Lock\FlockLock::class, $configuration);
+
+        return $lock;
+    }
+
+    /**
+     * @param string $className
+     * @param array $configuration
+     *
+     * @return Lock\LockInterface
+     * @throws InvalidConfigurationException
+     * @throws LockCreateException
+     */
+    protected function buildPathLock($className, array $configuration)
+    {
         $path = isset($configuration['path']) ? (string)$configuration['path'] : null;
         if (empty($path)) {
             throw new InvalidConfigurationException(
@@ -33,7 +62,7 @@ class LockBuilder implements SingletonInterface
         if (! $this->preparePath($path)) {
             throw new LockCreateException(sprintf('Path %s is not usable (not readable/writeable)', $path), 1510318759);
         }
-        $lock = GeneralUtility::makeInstance(Lock\DirectoryLock::class, $path);
+        $lock = GeneralUtility::makeInstance($className, $path);
 
         return $lock;
     }

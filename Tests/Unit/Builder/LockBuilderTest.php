@@ -99,4 +99,32 @@ class LockBuilderTest extends UnitTestCase
 
         $builder->buildDirectoryLock([]);
     }
+
+    /**
+     * @test
+     */
+    public function itBuildsAFlockLock()
+    {
+        $configurtion = [
+            'path' => $this->getLockPath(),
+        ];
+
+        $builder = new LockBuilder();
+
+        $lock = $builder->buildFlockLock($configurtion);
+
+        $this->assertInstanceOf(Lock\FlockLock::class, $lock);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Builder\Exception\InvalidConfigurationException
+     * @expectedExceptionCode 1510318044
+     */
+    public function itThrowsAnInvalidConfigurationExceptionOnBuildAFlockLockWithMissingPathConfiguration()
+    {
+        $builder = new LockBuilder();
+
+        $builder->buildFlockLock([]);
+    }
 }
