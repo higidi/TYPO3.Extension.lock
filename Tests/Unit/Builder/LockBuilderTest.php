@@ -131,6 +131,51 @@ class LockBuilderTest extends UnitTestCase
     /**
      * @test
      */
+    public function itBuildsAMySqlLock()
+    {
+        $configuration = [
+            'host' => 'mysql',
+        ];
+
+        $builder = new LockBuilder();
+
+        $lock = $builder->buildMySqlLock($configuration);
+
+        $this->assertInstanceOf(Lock\MySqlLock::class, $lock);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Builder\Exception\InvalidConfigurationException
+     * @expectedExceptionCode 1510327148
+     */
+    public function itThrowsAInvalidConfigurationExceptionOnBuildAMySQLLockWithMissingHostConfiguration()
+    {
+        $builder = new LockBuilder();
+
+        $builder->buildMysqlLock([]);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Builder\Exception\InvalidConfigurationException
+     * @expectedExceptionCode 1510327151
+     */
+    public function itThrowsAInvalidConfigurationExceptionOnBuildAMySQLLockWithInvalidClassNameConfiguration()
+    {
+        $configuration = [
+            'host' => '127.0.0.1',
+            'className' => \stdClass::class,
+        ];
+
+        $builder = new LockBuilder();
+
+        $builder->buildMysqlLock($configuration);
+    }
+
+    /**
+     * @test
+     */
     public function itBuildsAPhpRedisLock()
     {
         $configuration = [

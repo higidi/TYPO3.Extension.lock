@@ -44,6 +44,32 @@ class LockBuilder implements SingletonInterface
     /**
      * @param array $configuration
      *
+     * @return Lock\MySqlLock
+     * @throws InvalidConfigurationException
+     */
+    public function buildMySqlLock(array $configuration)
+    {
+        $host = isset($configuration['host']) ? (string)$configuration['host'] : null;
+        $port = isset($configuration['port']) ? (int)$configuration['port'] : 3306;
+        $userName = isset($configuration['username']) ? (string)$configuration['username'] : '';
+        $password = isset($configuration['password']) ? (string)$configuration['password'] : '';
+        $className = isset($configuration['className']) ? (string)$configuration['className'] : '\PDO';
+
+        if (empty($host)) {
+            throw new InvalidConfigurationException($configuration, 'Missing or empty mysql host', 1510327148);
+        }
+        if (! is_a($className, \PDO::class, true)) {
+            throw new InvalidConfigurationException($configuration, 'Classname must an instance of \PDO', 1510327151);
+        }
+
+        $lock = GeneralUtility::makeInstance(Lock\MySqlLock::class, $userName, $password, $host, $port, $className);
+
+        return $lock;
+    }
+
+    /**
+     * @param array $configuration
+     *
      * @return Lock\PhpRedisLock
      * @throws InvalidConfigurationException
      * @throws LockCreateException

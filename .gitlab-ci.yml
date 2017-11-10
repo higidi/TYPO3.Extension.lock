@@ -37,9 +37,14 @@ lint:cgl:
   stage: test
   services:
     - redis:latest
+    - mysql:latest
+  variables:
+    MYSQL_DATABASE: "typo3"
+    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
   before_script:
     - apk add --no-cache --virtual .build-deps autoconf g++ make
     - pecl install -f redis
+    - docker-php-ext-install pdo pdo_mysql
     - docker-php-ext-enable redis
     - wget https://composer.github.io/installer.sig -O - -q | tr -d '\n' > installer.sig
     - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
