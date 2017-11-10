@@ -3,10 +3,10 @@
 namespace Higidi\Lock\Tests\Unit;
 
 use Higidi\Lock\Builder\LockBuilder;
+use NinjaMutex\Lock;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use NinjaMutex\Lock;
 
 /**
  * Test case for "\Higidi\Lock\LockBuilder".
@@ -189,6 +189,7 @@ class LockBuilderTest extends UnitTestCase
 
         $builder->buildPhpRedisLock($configuration);
     }
+
     /**
      * @test
      * @expectedException \Higidi\Lock\Builder\Exception\LockCreateException
@@ -204,5 +205,33 @@ class LockBuilderTest extends UnitTestCase
         $builder = new LockBuilder();
 
         $builder->buildPhpRedisLock($configuration);
+    }
+
+    /**
+     * @test
+     */
+    public function itBuildsAPredisRedisLock()
+    {
+        $configuration = [
+            'parameters' => 'redis',
+        ];
+
+        $builder = new LockBuilder();
+
+        $lock = $builder->buildPredisRedisLock($configuration);
+
+        $this->assertInstanceOf(Lock\PredisRedisLock::class, $lock);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Builder\Exception\InvalidConfigurationException
+     * @expectedExceptionCode 1510325325
+     */
+    public function itThrowsAInvalidConfigurationExceptionOnBuildAPredisRedisLockWithMissingParametersConfiguration()
+    {
+        $builder = new LockBuilder();
+
+        $builder->buildPredisRedisLock([]);
     }
 }

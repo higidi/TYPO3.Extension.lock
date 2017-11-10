@@ -88,6 +88,26 @@ class LockBuilder implements SingletonInterface
     }
 
     /**
+     * @param array $configuration
+     *
+     * @return Lock\PredisRedisLock
+     * @throws InvalidConfigurationException
+     */
+    public function buildPredisRedisLock(array $configuration)
+    {
+        $parameters = isset($configuration['parameters']) ? (array)$configuration['parameters'] : null;
+        $options = isset($configuration['options']) ? (array)$configuration['options'] : [];
+        if (empty($parameters)) {
+            throw new InvalidConfigurationException($configuration, 'Missing or empty predis parameters', 1510325325);
+        }
+
+        $client = GeneralUtility::makeInstance(\Predis\Client::class, $parameters, $options);
+        $lock = GeneralUtility::makeInstance(Lock\PredisRedisLock::class, $client);
+
+        return $lock;
+    }
+
+    /**
      * @param string $className
      * @param array $configuration
      *
