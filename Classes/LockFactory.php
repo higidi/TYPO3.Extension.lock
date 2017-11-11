@@ -4,6 +4,7 @@ namespace Higidi\Lock;
 
 use Higidi\Lock\Builder\LockBuilder;
 use Higidi\Lock\Configuration\Configuration;
+use NinjaMutex\Lock\LockInterface;
 use TYPO3\CMS\Core\Locking\Exception\LockCreateException;
 use TYPO3\CMS\Core\Locking\LockFactory as CoreLockFactory;
 use TYPO3\CMS\Core\Locking\LockingStrategyInterface;
@@ -18,6 +19,11 @@ class LockFactory extends CoreLockFactory
      * @var Configuration
      */
     protected $configuration;
+
+    /**
+     * @var LockInterface
+     */
+    protected $lockImplementation;
 
     /**
      * @param Configuration|null $configuration The configuration to use
@@ -55,9 +61,63 @@ class LockFactory extends CoreLockFactory
             return parent::createLocker($id, $capabilities);
         }
 
-        $className = $this->configuration->getStrategy();
-        $locker = GeneralUtility::makeInstance($className, $id);
+        try {
+            $strategyClassName = $this->configuration->getStrategy();
+            if ($this->configuration->isMutexStrategy()) {
+                $mutexClassName = $this->configuration->getMutex();
+                $lockImplementation = $this->getLockImplemenation();
+                $mutex = GeneralUtility::makeInstance($mutexClassName, $id, $lockImplementation);
+                $locker = GeneralUtility::makeInstance($strategyClassName, $mutex);
+            } else {
+                $locker = GeneralUtility::makeInstance($strategyClassName, $id);
+            }
+        } catch (\Exception $e) {
+            if ($e instanceof LockCreateException) {
+                throw $e;
+            }
+            throw new LockCreateException('Could not create locker', 1510432762, $e);
+        }
 
         return $locker;
+    }
+
+    /**
+     * @return LockInterface
+     * @throws LockCreateException
+     */
+    protected function getLockImplemenation()
+    {
+        if (! $this->lockImplementation) {
+            $lockImplementationClassName = $this->configuration->getLockImplementation();
+            if (! $lockImplementationClassName) {
+                throw new LockCreateException('No lock implementation configured', 1510439606);
+            }
+            $lockImplementationConfiguration = $this->configuration->getLockImplementationConfiguration(
+                $lockImplementationClassName
+            );
+            $lockImplementationBuilder = $this->configuration->getLockImplementationBuilder(
+                $lockImplementationClassName
+            );
+            if (! is_callable($lockImplementationBuilder)) {
+                throw new LockCreateException(
+                    sprintf('No callable builder found for lock implementation %s', $lockImplementationClassName),
+                    1510432679
+                );
+            }
+            $lockImplementation = call_user_func($lockImplementationBuilder, $lockImplementationConfiguration);
+            if (! $lockImplementation instanceof $lockImplementationClassName) {
+                throw new LockCreateException(
+                    sprintf(
+                        'Expected lock implementation instance of %s. Got %s',
+                        $lockImplementationClassName,
+                        is_object($lockImplementation) ? get_class($lockImplementation) : gettype($lockImplementation)
+                    ),
+                    1510439540
+                );
+            }
+            $this->lockImplementation = $lockImplementation;
+        }
+
+        return $this->lockImplementation;
     }
 }
