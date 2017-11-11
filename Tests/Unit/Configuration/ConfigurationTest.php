@@ -198,6 +198,48 @@ class ConfigurationTest extends UnitTestCase
     /**
      * @test
      */
+    public function itIsPossibleToSetLockImplementationBuilderViaGlobalsConfigurationArray()
+    {
+        $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
+        $className = get_class($lockImplementation);
+        $lockImplementationBuilder = [
+            $className => function (array $configuration) {
+                return $configuration;
+            },
+        ];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['locking'] = [
+            'lockImplementationBuilder' => $lockImplementationBuilder,
+        ];
+
+        $sut = new Configuration();
+
+        $this->assertSame($lockImplementationBuilder, $sut->getLockImplementationBuilder());
+    }
+
+    /**
+     * @test
+     */
+    public function itIsPossibleToSetLockImplementationBuilderViaConfigurationArray()
+    {
+        $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
+        $className = get_class($lockImplementation);
+        $lockImplementationBuilder = [
+            $className => function (array $configuration) {
+                return $configuration;
+            },
+        ];
+        $configuration = [
+            'lockImplementationBuilder' => $lockImplementationBuilder,
+        ];
+
+        $sut = new Configuration($configuration);
+
+        $this->assertSame($lockImplementationBuilder, $sut->getLockImplementationBuilder());
+    }
+
+    /**
+     * @test
+     */
     public function itIsPossibleToSetLockImplementationConfigurationViaGlobalsConfigurationArray()
     {
         $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
@@ -336,6 +378,48 @@ class ConfigurationTest extends UnitTestCase
     /**
      * @test
      */
+    public function itHasAnArrayAsDefaultLockImplemenationBuilder()
+    {
+        $sut = new Configuration();
+
+        $this->assertSame([], $sut->getLockImplementationBuilder());
+    }
+
+    /**
+     * @test
+     */
+    public function itReturnsALockImplemenationBuilderByLockImplemenation()
+    {
+        $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
+        $className = get_class($lockImplementation);
+        $callable = function (array $configuration) {
+            return $configuration;
+        };
+        $lockImplementationBuilder = [
+            $className => $callable,
+        ];
+        $configuration = [
+            'lockImplementationBuilder' => $lockImplementationBuilder,
+        ];
+
+        $sut = new Configuration($configuration);
+
+        $this->assertSame($callable, $sut->getLockImplementationBuilder($className));
+    }
+
+    /**
+     * @test
+     */
+    public function itReturnsPerDefaultNullAsLockImplemenationBuilderByLockImplemenationIfNotExists()
+    {
+        $sut = new Configuration();
+
+        $this->assertNull($sut->getLockImplementationBuilder(\stdClass::class));
+    }
+
+    /**
+     * @test
+     */
     public function itHasAnArrayAsDefaultLockImplemenationConfiguration()
     {
         $sut = new Configuration();
@@ -382,6 +466,42 @@ class ConfigurationTest extends UnitTestCase
     {
         $configuration = [
             'lockImplementation' => \stdClass::class,
+        ];
+
+        new Configuration($configuration);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Configuration\Exception\InvalidLockImplementationException
+     * @expectedExceptionCode 1510436775
+     */
+    public function itThrowsAnInvalidLockImplemenationExceptionIfLockImplemenationForBuilderIsNotValid()
+    {
+        $configuration = [
+            'lockImplementationBuilder' => [
+                \stdClass::class => function (array $configuration) {
+                    return $configuration;
+                },
+            ],
+        ];
+
+        new Configuration($configuration);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Configuration\Exception\NotCallableLockImplemenationBuilderException
+     * @expectedExceptionCode 1510438594
+     */
+    public function itThrowsANotCallableLockImplementationBuilderExceptionIfBuilderIsNotCallable()
+    {
+        $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
+        $className = get_class($lockImplementation);
+        $configuration = [
+            'lockImplementationBuilder' => [
+                $className => 'not_callable',
+            ],
         ];
 
         new Configuration($configuration);

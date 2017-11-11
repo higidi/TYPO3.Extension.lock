@@ -5,6 +5,7 @@ namespace Higidi\Lock\Configuration;
 use Higidi\Lock\Configuration\Exception\InvalidLockImplementationException;
 use Higidi\Lock\Configuration\Exception\InvalidMutexException;
 use Higidi\Lock\Configuration\Exception\InvalidStrategyException;
+use Higidi\Lock\Configuration\Exception\NotCallableLockImplemenationBuilderException;
 use Higidi\Lock\Strategy\MutexAdapterStrategy;
 use NinjaMutex\Lock\LockInterface;
 use NinjaMutex\Mutex;
@@ -36,6 +37,11 @@ class Configuration implements SingletonInterface
      * @var null|string
      */
     protected $lockImplementation;
+
+    /**
+     * @var array
+     */
+    protected $lockImplementationBuilder = [];
 
     /**
      * @var array
@@ -178,6 +184,53 @@ class Configuration implements SingletonInterface
             );
         }
         $this->lockImplementation = $lockImplementation;
+
+        return $this;
+    }
+
+    /**
+     * @param null|string $lockImplemenation
+     *
+     * @return array|callable|null
+     */
+    public function getLockImplementationBuilder($lockImplemenation = null)
+    {
+        if (empty($lockImplemenation)) {
+            return $this->lockImplementationBuilder;
+        }
+
+        $lockImplemenationBuilder = isset($this->lockImplementationBuilder[$lockImplemenation])
+            ? $this->lockImplementationBuilder[$lockImplemenation]
+            : null;
+
+        return $lockImplemenationBuilder;
+    }
+
+    /**
+     * @param array $builder
+     *
+     * @return $this
+     * @throws InvalidLockImplementationException
+     * @throws NotCallableLockImplemenationBuilderException
+     */
+    protected function setLockImplementationBuilder($builder)
+    {
+        if (! is_array($builder)) {
+            $builder = (array)$builder;
+        }
+
+        foreach ($builder as $lockImplemenation => $lockImplemenationBuilder) {
+            if (! $this->isValidLockImplementation($lockImplemenation)) {
+                throw new InvalidLockImplementationException('', 1510436775);
+            }
+            if (! is_callable($lockImplemenationBuilder)) {
+                throw new NotCallableLockImplemenationBuilderException(
+                    'Lock implemenation builder needs to be callable',
+                    1510438594
+                );
+            }
+            $this->lockImplementationBuilder[$lockImplemenation] = $lockImplemenationBuilder;
+        }
 
         return $this;
     }
