@@ -20,24 +20,14 @@ class LockFactory extends CoreLockFactory
     protected $configuration;
 
     /**
-     * @var LockBuilder
-     */
-    protected $lockBuilder;
-
-    /**
      * @param Configuration|null $configuration The configuration to use
-     * @param LockBuilder|null $lockBuilder The lock implementation builder to use
      */
     public function __construct(Configuration $configuration = null, LockBuilder $lockBuilder = null)
     {
         if (null === $configuration) {
             $configuration = GeneralUtility::makeInstance(Configuration::class);
         }
-        if (null === $lockBuilder) {
-            $lockBuilder = GeneralUtility::makeInstance(LockBuilder::class);
-        }
         $this->configuration = $configuration;
-        $this->lockBuilder = $lockBuilder;
     }
 
     /**
@@ -48,16 +38,6 @@ class LockFactory extends CoreLockFactory
     public function getConfiguration()
     {
         return $this->configuration;
-    }
-
-    /**
-     * Get lock builder.
-     *
-     * @return LockBuilder
-     */
-    public function getLockBuilder()
-    {
-        return $this->lockBuilder;
     }
 
     /**

@@ -64,28 +64,6 @@ class LockFactoryTest extends UnitTestCase
     /**
      * @test
      */
-    public function itCreatesADefaultLockBuilderIfNotPassed()
-    {
-        $sut = new LockFactory();
-
-        $this->assertInstanceOf(LockBuilder::class, $sut->getLockBuilder());
-    }
-
-    /**
-     * @test
-     */
-    public function itHoldsALockBuilder()
-    {
-        $lockBuilder = $this->prophesize(LockBuilder::class);
-
-        $sut = new LockFactory(null, $lockBuilder->reveal());
-
-        $this->assertSame($lockBuilder->reveal(), $sut->getLockBuilder());
-    }
-
-    /**
-     * @test
-     */
     public function itOnlyOperatesIfIsActive()
     {
         $configuration = $this->prophesize(Configuration::class);
