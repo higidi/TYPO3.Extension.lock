@@ -38,6 +38,11 @@ class Configuration implements SingletonInterface
     protected $lockImplementation;
 
     /**
+     * @var array
+     */
+    protected $lockImplementationConfiguration = [];
+
+    /**
      * @param array|null $configuration
      */
     public function __construct(array $configuration = null)
@@ -166,7 +171,7 @@ class Configuration implements SingletonInterface
      */
     protected function setLockImplementation($lockImplementation)
     {
-        if (! is_a($lockImplementation, LockInterface::class, true)) {
+        if (! $this->isValidLockImplementation($lockImplementation)) {
             throw new InvalidLockImplementationException(
                 sprintf('%s only accepts classes extending the %s class', __METHOD__, LockInterface::class),
                 1510268834
@@ -175,5 +180,55 @@ class Configuration implements SingletonInterface
         $this->lockImplementation = $lockImplementation;
 
         return $this;
+    }
+
+    /**
+     * @param null|string $lockImplementation
+     *
+     * @return array
+     */
+    public function getLockImplementationConfiguration($lockImplementation = null)
+    {
+        if (empty($lockImplementation)) {
+            return $this->lockImplementationConfiguration;
+        }
+
+        $lockImplementationConfiguration = isset($this->lockImplementationConfiguration[$lockImplementation])
+            ? $this->lockImplementationConfiguration[$lockImplementation]
+            : [];
+
+        return $lockImplementationConfiguration;
+    }
+
+    /**
+     * @param array $configuration
+     *
+     * @return $this
+     * @throws InvalidLockImplementationException
+     */
+    protected function setLockImplementationConfiguration($configuration)
+    {
+        if (! is_array($configuration)) {
+            $configuration = (array)$configuration;
+        }
+
+        foreach ($configuration as $lockImplementation => $lockImplementationConfiguration) {
+            if (! $this->isValidLockImplementation($lockImplementation)) {
+                throw new InvalidLockImplementationException('', 1510436776);
+            }
+            $this->lockImplementationConfiguration[$lockImplementation] = (array)$lockImplementationConfiguration;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return bool
+     */
+    protected function isValidLockImplementation($className)
+    {
+        return is_a($className, LockInterface::class, true);
     }
 }

@@ -198,6 +198,44 @@ class ConfigurationTest extends UnitTestCase
     /**
      * @test
      */
+    public function itIsPossibleToSetLockImplementationConfigurationViaGlobalsConfigurationArray()
+    {
+        $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
+        $className = get_class($lockImplementation);
+        $lockImplementationConfiguration = [
+            $className => [],
+        ];
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['locking'] = [
+            'lockImplementationConfiguration' => $lockImplementationConfiguration,
+        ];
+
+        $sut = new Configuration();
+
+        $this->assertSame($lockImplementationConfiguration, $sut->getLockImplementationConfiguration());
+    }
+
+    /**
+     * @test
+     */
+    public function itIsPossibleToSetLockImplementationConfigurationViaConfigurationArray()
+    {
+        $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
+        $className = get_class($lockImplementation);
+        $lockImplementationConfiguration = [
+            $className => [],
+        ];
+        $configuration = [
+            'lockImplementationConfiguration' => $lockImplementationConfiguration,
+        ];
+
+        $sut = new Configuration($configuration);
+
+        $this->assertSame($lockImplementationConfiguration, $sut->getLockImplementationConfiguration());
+    }
+
+    /**
+     * @test
+     */
     public function itIsDisabledByDefault()
     {
         $sut = new Configuration();
@@ -297,6 +335,46 @@ class ConfigurationTest extends UnitTestCase
 
     /**
      * @test
+     */
+    public function itHasAnArrayAsDefaultLockImplemenationConfiguration()
+    {
+        $sut = new Configuration();
+
+        $this->assertSame([], $sut->getLockImplementationConfiguration());
+    }
+
+    /**
+     * @test
+     */
+    public function itReturnsALockImplemenationConfigurationByLockImplemenation()
+    {
+        $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
+        $className = get_class($lockImplementation);
+        $config = ['bla' => 'foo'];
+        $lockImplementationConfiguration = [
+            $className => $config,
+        ];
+        $configuration = [
+            'lockImplementationConfiguration' => $lockImplementationConfiguration,
+        ];
+
+        $sut = new Configuration($configuration);
+
+        $this->assertSame($config, $sut->getLockImplementationConfiguration($className));
+    }
+
+    /**
+     * @test
+     */
+    public function itReturnsPerDefaultAnArrayAsLockImplemenationConfigurationByLockImplemenationIfNotExists()
+    {
+        $sut = new Configuration();
+
+        $this->assertSame([], $sut->getLockImplementationConfiguration(\stdClass::class));
+    }
+
+    /**
+     * @test
      * @expectedException \Higidi\Lock\Configuration\Exception\InvalidLockImplementationException
      * @expectedExceptionCode 1510268834
      */
@@ -304,6 +382,22 @@ class ConfigurationTest extends UnitTestCase
     {
         $configuration = [
             'lockImplementation' => \stdClass::class,
+        ];
+
+        new Configuration($configuration);
+    }
+
+    /**
+     * @test
+     * @expectedException \Higidi\Lock\Configuration\Exception\InvalidLockImplementationException
+     * @expectedExceptionCode 1510436776
+     */
+    public function itThrowsAnInvalidLockImplemenationExceptionIfLockImplemenationForConfigurationIsNotValid()
+    {
+        $configuration = [
+            'lockImplementationConfiguration' => [
+                \stdClass::class => [],
+            ],
         ];
 
         new Configuration($configuration);
