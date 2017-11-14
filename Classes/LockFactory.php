@@ -64,6 +64,7 @@ class LockFactory extends CoreLockFactory
         try {
             $strategyClassName = $this->configuration->getStrategy();
             if ($this->configuration->isMutexStrategy()) {
+                $id = md5((string)$id);
                 $mutexClassName = $this->configuration->getMutex();
                 $lockImplementation = $this->getLockImplemenation();
                 $mutex = GeneralUtility::makeInstance($mutexClassName, $id, $lockImplementation);
