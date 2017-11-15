@@ -4,6 +4,7 @@ namespace Higidi\Lock;
 
 use Higidi\Lock\Builder\LockBuilder;
 use Higidi\Lock\Configuration\Configuration;
+use NinjaMutex\Lock\LockExpirationInterface;
 use NinjaMutex\Lock\LockInterface;
 use TYPO3\CMS\Core\Locking\Exception\LockCreateException;
 use TYPO3\CMS\Core\Locking\LockFactory as CoreLockFactory;
@@ -115,6 +116,9 @@ class LockFactory extends CoreLockFactory
                     ),
                     1510439540
                 );
+            }
+            if ($lockImplementation instanceof LockExpirationInterface) {
+                $lockImplementation->setExpiration($this->configuration->getLockImplementationExpiration());
             }
             $this->lockImplementation = $lockImplementation;
         }
