@@ -240,6 +240,36 @@ class ConfigurationTest extends UnitTestCase
     /**
      * @test
      */
+    public function itIsPossibleToSetLockImplementationExpirationViaGlobalsConfigurationArray()
+    {
+        $expiration = (new \DateTime())->getTimestamp();
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['locking'] = [
+            'lockImplementationExpiration' => $expiration,
+        ];
+
+        $sut = new Configuration();
+
+        $this->assertSame($expiration, $sut->getLockImplementationExpiration());
+    }
+
+    /**
+     * @test
+     */
+    public function itIsPossibleToSetLockImplementationExpirationViaConfigurationArray()
+    {
+        $expiration = (new \DateTime())->getTimestamp();
+        $configuration = [
+            'lockImplementationExpiration' => $expiration,
+        ];
+
+        $sut = new Configuration($configuration);
+
+        $this->assertSame($expiration, $sut->getLockImplementationExpiration());
+    }
+
+    /**
+     * @test
+     */
     public function itIsPossibleToSetLockImplementationConfigurationViaGlobalsConfigurationArray()
     {
         $lockImplementation = $this->prophesize(LockInterface::class)->reveal();
@@ -415,6 +445,27 @@ class ConfigurationTest extends UnitTestCase
         $sut = new Configuration();
 
         $this->assertNull($sut->getLockImplementationBuilder(\stdClass::class));
+    }
+
+    /**
+     * @test
+     */
+    public function itReturnsPerDefaultZeroAsLockImplementationExpiration()
+    {
+        $sut = new Configuration();
+
+        $this->assertSame(0, $sut->getLockImplementationExpiration());
+    }
+
+    /**
+     * @test
+     */
+    public function itAllowsOnlyPositiveValuesOrZeroAsLockImplementationExpiration()
+    {
+        $expiration = -1;
+        $sut = new Configuration(['lockImplementationExpiration' => $expiration]);
+
+        $this->assertSame(0, $sut->getLockImplementationExpiration());
     }
 
     /**

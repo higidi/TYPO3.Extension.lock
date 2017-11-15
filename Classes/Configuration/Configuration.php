@@ -44,6 +44,11 @@ class Configuration implements SingletonInterface
     protected $lockImplementationBuilder = [];
 
     /**
+     * @var int
+     */
+    protected $lockImplementationExpiration = 0;
+
+    /**
      * @var array
      */
     protected $lockImplementationConfiguration = [];
@@ -230,6 +235,29 @@ class Configuration implements SingletonInterface
                 );
             }
             $this->lockImplementationBuilder[$lockImplemenation] = $lockImplemenationBuilder;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLockImplementationExpiration()
+    {
+        return $this->lockImplementationExpiration;
+    }
+
+    /**
+     * @param int $expiration
+     *
+     * @return $this
+     */
+    public function setLockImplementationExpiration($expiration)
+    {
+        $expiration = (int)$expiration;
+        if ($expiration >= 0) {
+            $this->lockImplementationExpiration = $expiration;
         }
 
         return $this;
