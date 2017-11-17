@@ -68,11 +68,20 @@ class MutexAdapterStrategy implements LockingStrategyInterface
     public function acquire($mode = self::LOCK_CAPABILITY_EXCLUSIVE)
     {
         $timeout = null;
-        if ($mode & static::LOCK_CAPABILITY_NOBLOCK) {
+        $isNonBlockingMode = $mode & static::LOCK_CAPABILITY_NOBLOCK;
+        if ($isNonBlockingMode) {
             $timeout = 0;
         }
 
-        return $this->mutex->acquireLock($timeout);
+        $isAcquired = $this->mutex->acquireLock($timeout);
+        if ($isNonBlockingMode && ! $isAcquired) {
+            throw new LockAcquireWouldBlockException(
+                'Failed to acquire lock because the request would block.',
+                1428700748
+            );
+        }
+
+        return $isAcquired;
     }
 
     /**

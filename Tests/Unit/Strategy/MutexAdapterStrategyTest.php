@@ -100,6 +100,25 @@ class MutexAdapterStrategyTest extends UnitTestCase
 
     /**
      * @test
+     * @expectedException \TYPO3\CMS\Core\Locking\Exception\LockAcquireWouldBlockException
+     * @expectedExceptionMessage Failed to acquire lock because the request would block.
+     * @expectedExceptionCode 1428700748
+     */
+    public function itThrowsALockAcquireWouldBlockExceptionIfNonBlockingLockWhouldBlock()
+    {
+        $mode = LockingStrategyInterface::LOCK_CAPABILITY_EXCLUSIVE | LockingStrategyInterface::LOCK_CAPABILITY_NOBLOCK;
+        $mutex = $this->prophesize(Mutex::class);
+        $mutex
+            ->acquireLock(0)
+            ->shouldBeCalled()
+            ->willReturn(false);
+        $sut = new MutexAdapterStrategy($mutex->reveal());
+
+        $sut->acquire($mode);
+    }
+
+    /**
+     * @test
      */
     public function itReleasesALock()
     {
